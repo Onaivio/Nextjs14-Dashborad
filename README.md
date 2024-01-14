@@ -143,6 +143,125 @@ export default function InvoiceStatus({ status }: { status: string }) {
 )}
 ```
 
+## Optimizing Fonts and Images
+
+In the previous chapter, you learned how to style your Next.js application. Let's continue working on your home page by adding a custom font and a hero image.
+In this chapter...
+Here are the topics we’ll cover
+
+- ✏️ How to add custom fonts with next/font.
+- 🛣️ How to add images with next/image.
+- ✅ How fonts and images are optimized in Next.js.
+
+### Why optimize fonts?
+
+Fonts play a significant role in the design of a website, but using custom fonts in your project can affect performance if the font files need to be fetched and loaded.
+Cumulative Layout Shift is a metric used by Google to evaluate the performance and user experience of a website. With fonts, layout shift happens when the browser initially renders text in a fallback or system font and then swaps it out for a custom font once it has loaded. This swap can cause the text size, spacing, or layout to change, shifting elements around it.
+![Cumulative Layout Shift](https://nextjs.org/_next/image?url=%2Flearn%2Fdark%2Ffont-layout-shift.png&w=1920&q=75&dpl=dpl_9EKEbD7jAviauyTffgoEyAkQSGtP)
+Next.js automatically optimizes fonts in the application when you use the next/font module. It does so by downloading font files at build time and hosting them with your other static assets. This means when a user visits your application, there are no additional network requests for fonts which would impact performance.
+
+### Adding a primary font
+
+In your /app/ui folder, create a new file called fonts.ts. You'll use this file to keep the fonts that will be used throughout your application.
+
+Import the Inter font from the next/font/google module - this will be your primary font.
+Then, specify what subset you'd like to load. In this case, 'latin':
+
+```tsx
+import { Inter } from 'next/font/google';
+export const inter = Inter({ subsets: ['latin'] });
+```
+
+Finally, add the font to the <body> element in /app/layout.tsx
+By adding Inter to the <body> element, the font will be applied throughout your application. Here, you're also adding the Tailwind antialiased class which smooths out the font. It's not necessary to use this class, but it adds a nice touch to your fonts.
+
+```css
+.antialiased {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+```
+
+```tsx
+<body className={`${inter.className} antialiased`}>{children}</body>
+```
+
+> You can also add fonts to specific elements of your application.
+
+---
+
+### Why optimize images?
+
+Next.js can serve static assets, like images, under the top-level /public folder. Files inside /public can be referenced in your application.
+If you look inside the folder, you'll see there's are two images: hero-desktop.png and hero-mobile.png. These two images are completely different, and they'll be shown depending on the user's device is a desktop or mobile.
+With regular HTML, you would add an image as follows:
+
+```tsx
+    <img src="/hero.png" alt="Screenshots of the dashboard project showing desktop and mobile versions"/>
+```
+
+However, this means you have to manually:
+
+- Ensure your image is responsive on different screen sizes.
+- Specify image sizes for different devices.
+- Prevent layout shift as the images load.
+- Lazy load images that are outside the user's viewport.
+
+Instead of manually handling these optimizations, you can use the ```next/image``` component to automatically optimize your images.
+
+### The \<Image\> component
+
+The \<Image\> Component is an extension of the HTML \<img\> tag, and comes with automatic image optimization, such as:
+
+- Preventing layout shift automatically when images are loading.
+- Resizing images to avoid shipping large images to devices with a smaller viewport.
+- Lazy loading images by default (images load as they enter the viewport).
+- Serving images in modern formats, like WebP and AVIF, when the browser supports it.
+
+### Adding the desktop hero image
+
+Let's swap the \<img\> tag for an \<Image\> component.
+In your /app/page.tsx file, import the component from next/image. Then, add the image under the comment:
+
+```tsx
+    <Image
+        src="/hero-desktop.png"
+        width={1000}
+        height={760}
+        className="hidden md:block"
+        alt="Screenshots of the dashboard project showing desktop and mobile versions"
+    />
+```
+
+Here, you're setting the width to 1000 and height to 760 pixels. It's good practice to set the width and height of your images to avoid layout shift, these should be an aspect ratio identical to the source image.
+
+### Adding the mobile hero image
+
+Now it's your turn again! Under the image you've just added, add another <Image> component for the mobile hero.
+
+- The image should have a width of 560 and height of 620 pixels.
+- It should be shown on mobile screens, and hidden on desktop.
+- You can use Dev Tools to check if the desktop and mobile images are swapped correctly.
+
+```tsx
+    <Image
+        src="/hero-mobile.png"
+        width={560}
+        height={620}
+        className="block md:hidden"
+        alt="Screenshot of the dashboard project showing mobile version"
+    />
+```
+
+### Recommended reading
+
+There's a lot more to learn about these topics, including optimizing remote images and using local font files. If you'd like to dive deeper into fonts and images, see:
+
+- [Image Optimization Docs](https://nextjs.org/docs/app/building-your-application/optimizing/images)
+- [Font Optimization Docs](https://nextjs.org/docs/app/building-your-application/optimizing/fonts)
+- [Improving Web Performance with Images (MDN)](https://developer.mozilla.org/en-US/docs/Learn/Performance/Multimedia)
+- [Web Fonts (MDN)](https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text/Web_fonts)
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
